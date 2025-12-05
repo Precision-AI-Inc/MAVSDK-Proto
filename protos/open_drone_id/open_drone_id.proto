@@ -51,6 +51,13 @@ service OpenDroneIdService {
      * Subscribe to arm status updates.
      */
     rpc SubscribeArmStatus(SubscribeArmStatusRequest) returns(stream ArmStatusResponse) {}
+
+    /*
+     * Subscribe to base station position updates.
+     * Position is extracted from incoming GPS_RTCM_DATA messages containing RTCM 1005/1006.
+     * This can be used to automatically update operator location for Remote ID.
+     */
+    rpc SubscribeBaseStationPosition(SubscribeBaseStationPositionRequest) returns(stream BaseStationPositionResponse) {}
 }
 
 // Per-message configuration for Open Drone ID broadcasts.
@@ -113,9 +120,22 @@ message SetSelfIdResponse {
     OpenDroneIdResult open_drone_id_result = 1;
 }
 
-message SubscribeArmStatusRequest { }
+message SubscribeArmStatusRequest {}
 message ArmStatusResponse {
     ArmStatus arm_status = 1;
+}
+
+message SubscribeBaseStationPositionRequest {}
+message BaseStationPositionResponse {
+    BaseStationPosition base_station_position = 1;
+}
+
+// Base station position extracted from RTCM 1005/1006 messages in GPS_RTCM_DATA.
+// Used to provide operator/GCS location for Remote ID.
+message BaseStationPosition {
+    double latitude_deg = 1; // Latitude in degrees (WGS84)
+    double longitude_deg = 2; // Longitude in degrees (WGS84)
+    float altitude_m = 3; // Altitude in meters above WGS84 ellipsoid
 }
 
 message BasicId {
